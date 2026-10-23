@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оттепель: Ценности на экране</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700;900&display=swap');
+
+        :root {
+            --paper: #f4f1ea;
+            --ink: #111111;
+            --red: #d32f2f;
+            --green: #2e7d32;
+            --gray: #888888;
+            --kp-orange: #ff5500;   
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--paper);
+            color: #111111; 
+            font-family: 'Golos Text', sans-serif;
+            line-height: 1.6;
+            background-image: 
+                linear-gradient(rgba(244, 241, 234, 0.95), rgba(244, 241, 234, 0.95)),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d32f2f' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* Навигация */
+        nav {
+            position: fixed; top: 0; width: 100%; background: var(--paper);
+            padding: 15px 0; z-index: 1000;
+            display: flex; justify-content: center; flex-wrap: wrap; gap: 25px;
+            font-size: 1.2rem; font-weight: 700;
+            border-bottom: 3px solid var(--ink);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        nav a { color: #111111; text-decoration: none; transition: color 0.2s; }
+        nav a:hover { color: var(--red); }
+
+        /* =========================================================
+           ШАПКА САЙТА (ФОН СДЕЛАН ЧЕРЕЗ CSS, ОН ВСЕГДА БУДЕТ РАБОТАТЬ)
+           ========================================================= */
+        header {
+            height: 80vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            padding: 20px; 
+            
+            /* Встроенный кинематографичный фон (темный зал со светом) */
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(211, 47, 47, 0.2) 0%, transparent 60%),
+                linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+                
+            border-bottom: 5px solid var(--red);
+            position: relative;
+        }
+        
+        /* 
+           ЕСЛИ ТЫ ХОЧЕШЬ ПОСТАВИТЬ СВОЮ КАРТИНКУ:
+           1. Создай папку images рядом с index.html
+           2. Положи туда картинку и назови её header-bg.jpg
+           3. Удали строки 58-60 выше и вставь это вместо них:
+           background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('images/header-bg.jpg') center/cover no-repeat;
+        */
+
+        header h1 {
+            font-size: 6rem; line-height: 1.1; text-transform: uppercase;
+            color: #ffffff !important; margin-bottom: 20px; letter-spacing: 2px;
+            font-weight: 900; text-shadow: 4px 4px 0 var(--red);
+        }
+        header .subtitle {
+            font-size: 1.3rem; max-width: 700px; margin-bottom: 40px; 
+            color: #cccccc !important; 
+        }
+        .author-badge { 
+            background: var(--red); color: #ffffff !important; 
+            padding: 10px 30px; font-size: 1.4rem; 
+            transform: rotate(-2deg); border: 2px solid #ffffff;
+            font-weight: 700;
+        }
+
+        section { padding: 60px 20px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;}
+        h2 { 
+            font-size: 2.8rem; margin-bottom: 30px; 
+            color: #111111; border-bottom: 3px solid var(--red); 
+            display: inline-block; font-weight: 900;
+        }
+
+        /* ТАЙМЛАЙН */
+        .timeline-container { position: relative; margin: 20px 0 30px; padding: 20px 0; }
+        .timeline-line { position: absolute; top: 30px; left: 0; width: 100%; height: 4px; background: var(--ink); z-index: 1; }
+        .timeline-track { display: flex; justify-content: space-between; position: relative; z-index: 2; flex-wrap: wrap; gap: 20px; }
+        
+        .t-item { display: flex; flex-direction: column; align-items: center; width: 140px; cursor: pointer; text-decoration: none; color: #111111; transition: transform 0.2s;}
+        .t-item:hover { transform: scale(1.05); }
+        .t-dot { width: 20px; height: 20px; background: var(--paper); border: 4px solid var(--ink); margin-bottom: 15px; transition: all 0.2s; }
+        .t-dot.history { border-color: var(--red); transform: rotate(45deg); }
+        .t-dot.movie { background: var(--ink); border-radius: 50%; }
+        .t-item:hover .t-dot { background: var(--red); border-color: var(--red); }
+        
+        .t-date { font-size: 1.4rem; margin-bottom: 5px; font-weight: 700;}
+        .t-label { font-size: 1rem; font-weight: 700; text-align: center; color: var(--red); line-height: 1.2;}
+        .t-item.history-item .t-label { color: #111111; }
+
+        /* Единый блок для вывода информации о событии */
+        .timeline-info-box {
+            display: none; margin-top: 30px; 
+            background: #ffffff; color: #111111 !important;
+            border: 3px solid var(--ink); padding: 30px; 
+            box-shadow: 8px 8px 0 var(--red);
+            animation: slideDown 0.3s ease-out;
+        }
+        .timeline-info-box h4 { font-size: 1.8rem; color: var(--red); margin-bottom: 15px; font-weight: 700; }
+        .timeline-info-box p { font-size: 1.1rem; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* КАРТОЧКИ ФИЛЬМОВ */
+        .film-card { 
+            margin-bottom: 100px; border: 3px solid var(--ink); 
+            background: #ffffff; color: #111111 !important;
+            box-shadow: 12px 12px 0 rgba(211, 47, 47, 0.15);
+        }
+        .film-header { padding: 40px; border-bottom: 3px solid var(--ink); background: #fafafa; }
+        .film-info h3 { font-size: 3rem; margin-bottom: 5px; line-height: 1.1; color: #111111; font-weight: 900; }
+        .film-meta { color: var(--red); font-size: 1.2rem; margin-bottom: 15px; font-weight: 700; }
+        .film-quote { font-size: 1.3rem; font-style: italic; border-left: 6px solid var(--red); padding-left: 20px; margin-top: 20px; font-weight: 700; color: #222;}
+        .film-content { padding: 40px; }
+
+        /* Рейтинги */
+        .film-stats-row {
+            display: flex; align-items: center; flex-wrap: wrap; gap: 15px;
+            margin-bottom: 20px; font-size: 1.1rem; font-weight: 700;
+        }
+        .kp-link {
+            background: var(--kp-orange); color: #ffffff !important; padding: 5px 15px;
+            text-decoration: none; border-radius: 5px; transition: background 0.2s;
+        }
+        .kp-link:hover { background: #cc4400; }
+        .rating-badge {
+            background: var(--ink); color: #ffffff !important; padding: 5px 10px;
+            border-radius: 5px; font-size: 1rem;
+        }
+        .film-desc-text { font-size: 1.1rem; margin-bottom: 20px; color: #333333; }
+        .critics-box { background: #f0f0f0; border-left: 6px solid var(--gray); padding: 15px; font-size: 1.05rem; margin-bottom: 20px; font-style: italic; color: #222;}
+
+        /* ГАЛЕРЕЯ */
+        .gallery-title { font-size: 1.8rem; margin: 30px 0 15px 0; font-weight: 700;}
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 40px; }
+        .gallery img { width: 100%; height: 220px; object-fit: cover; border: 3px solid var(--ink); filter: grayscale(100%) contrast(1.2); cursor: pointer; transition: all 0.3s ease; }
+        .gallery img:hover { filter: grayscale(0%); transform: scale(1.03); border-color: var(--red); box-shadow: 0 0 15px rgba(211,47,47,0.4); }
+
+        /* ДОСЬЕ */
+        .section-title { font-size: 1.8rem; margin: 30px 0 15px 0; border-bottom: 3px dashed var(--gray); display: inline-block; font-weight: 700;}
+        .director-box { border-left: 8px solid var(--red); padding: 20px; background: #f9f9f9; font-size: 1.1rem; margin-bottom: 20px; color: #222;}
+
+        /* СТЕНА ГЕРОЕВ */
+        .hero-wall { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .hero-card { border: 3px solid var(--ink); cursor: pointer; text-align: center; transition: all 0.2s; background: #ffffff; color: #111111; }
+        .hero-card:hover { background: #f0f0f0; transform: translateY(-5px);}
+        .hero-img { width: 100%; height: 250px; object-fit: cover; filter: grayscale(100%) contrast(1.3); border-bottom: 3px solid var(--ink); background-color: #ccc; }
+        .hero-info { padding: 15px; }
+        .hero-name { font-size: 1.3rem; margin-bottom: 5px; font-weight: 700;}
+        .hero-role { font-size: 0.95rem; font-style: italic; color: var(--red); font-weight: 700;}
+        
+        .hero-card.active { background: var(--ink); color: #ffffff !important; }
+        .hero-card.active .hero-role { color: #ff8888; }
+        .hero-card.active .hero-img { border-bottom-color: var(--red); }
+        .hero-desc { display: none; margin-top: 15px; font-size: 0.95rem; text-align: left; padding: 15px; background: #000; color: #dddddd !important; }
+        .hero-card.active .hero-desc { display: block; }
+
+        /* ЦЕННОСТИ И ТЕСТЫ */
+        .values-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; margin-bottom: 20px; }
+        .value-tag { font-size: 1.2rem; color: var(--red); border: 3px solid var(--red); padding: 2px 15px; transform: rotate(-1deg); font-weight: 700;}
+        .summary-box { border: 3px dashed var(--ink); padding: 20px; margin-bottom: 30px; font-size: 1.1rem; background: #fdfdfd;}
+
+        .quiz-block { padding: 30px; border: 3px solid var(--ink); background: #f0f0f0; position: relative; }
+        .quiz-block::before { content: "Проверка знаний"; position: absolute; top: -18px; left: 20px; background: #ffffff; padding: 0 10px; font-size: 1.2rem; color: #111; font-weight: 700;}
+        .quiz-question { font-size: 1.4rem; margin-bottom: 20px; line-height: 1.3; color: #111; font-weight: 700;}
+        .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+        
+        .quiz-btn { background: #ffffff; color: #111111 !important; border: 3px solid var(--ink); padding: 15px; cursor: pointer; font-family: 'Golos Text', sans-serif; transition: all 0.2s; font-size: 1rem; text-align: left; font-weight: 500;}
+        .quiz-btn:hover { background: #ddd; color: #111 !important; }
+        .quiz-btn.correct { background: var(--green); color: #ffffff !important; border-color: var(--green); }
+        .quiz-btn.wrong { background: var(--red); color: #ffffff !important; border-color: var(--red); }
+        .quiz-result { margin-top: 20px; font-size: 1.3rem; min-height: 20px; font-weight: 700;}
+
+        /* ВЫВОД */
+        .conclusion { border: 4px solid var(--ink); padding: 50px; text-align: center; background: #ffffff; box-shadow: 10px 10px 0 var(--red);}
+        .conclusion-text { font-size: 1.3rem; max-width: 950px; margin: 0 auto 20px auto; font-weight: 500; color: #111; text-align: left;}
+        .conclusion-text p { margin-bottom: 15px; }
+        .conclusion strong { color: var(--red); font-weight: 900;}
+
+        /* ЛАЙТБОКС */
+        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; cursor: zoom-out; }
+        .lightbox img { max-width: 90%; max-height: 90%; border: 5px solid white; box-shadow: 0 0 50px rgba(255,255,255,0.2);}
+
+        @media (max-width: 900px) {
+            header h1 { font-size: 3.5rem; }
+            .film-header { padding: 20px; }
+            .film-content { padding: 20px; }
+            nav { font-size: 1rem; gap: 10px; }
+            .timeline-line { display: none; }
+            .timeline-track { flex-direction: column; align-items: flex-start; gap: 30px; }
+            .t-item { flex-direction: row; width: 100%; align-items: center; text-align: left; }
+            .t-dot { margin-bottom: 0; margin-right: 20px; }
+            .t-item { display: flex; } 
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#timeline">Хронология</a>
+        <a href="#friends">Верные друзья</a>
+        <a href="#communist">Коммунист</a>
+        <a href="#9days">9 дней</a>
+        <a href="#conclusion">Итог</a>
+    </nav>
+
+    <header>
+        <h1>ЦЕННОСТИ<br>СОВЕТСКОГО<br>КИНО</h1>
+        <div class="subtitle">Как <strong>исторические события</strong> и политический климат 1950–60-х годов формировали <strong>моральные ориентиры</strong> на экране</div>
+        <div class="author-badge">Ильяс & Софья // БПМ264</div>
+    </header>
+
+    <!-- ЛЕНТА ВРЕМЕНИ -->
+    <section id="timeline">
+        <h2>// Карта времени и контекст</h2>
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+            <div class="timeline-track">
+                <!-- 1953 -->
+                <div class="t-item history-item" onclick="showTimelineInfo(this, '1953: Смерть Сталина', '<strong>Почему это фон для «Верных друзей» (1954)?</strong> После десятилетий тотального страха, репрессий и тяжелого военного кино общество нуждалось в передышке. Смерть вождя запустила процесс «оттепели». Фильм Калатозова стал предвестником перемен: режиссер отказался от пафоса и предложил зрителю простую, светлую историю о дружбе, где нет места идеологии — только живые человеческие эмоции.')">
+                    <div class="t-dot history"></div>
+                    <div>
+                        <div class="t-date">1953</div>
+                        <div class="t-label">Смерть Сталина</div>
+                    </div>
+                </div>
+                <!-- 1954 -->
+                <a href="#friends" class="t-item movie-item">
+                    <div class="t-dot movie"></div>
+                    <div>
+                        <div class="t-date">1954</div>
+                        <div class="t-label">«Верные друзья»</div>
+                    </div>
+                </a>
+                <!-- 1956 -->
+                <div class="t-item history-item" onclick="showTimelineInfo(this, '1956: XX съезд КПСС', '<strong>Почему это фон для «Коммуниста» (1957)?</strong> На XX съезде Хрущёв осудил культ личности Сталина. Это дало режиссерам свободу показывать героев не как «бронзовые памятники», а как живых людей с сомнениями. В «Коммунисте» Юлий Райзман впервые показал фанатичного революционера Губанова не только как борца за идею, но и как человека, разрывающегося между партийным долгом и любовью к жене.')">
+                    <div class="t-dot history"></div>
+                    <div>
+                        <div class="t-date">1956</div>
+                        <div class="t-label">XX съезд КПСС</div>
+                    </div>
+                </div>
+                <!-- 1957 -->
+                <a href="#communist" class="t-item movie-item">
+                    <div class="t-dot movie"></div>
+                    <div>
+                        <div class="t-date">1957</div>
+                        <div class="t-label">«Коммунист»</div>
+                    </div>
+                </a>
+                <!-- 1961 -->
+                <div class="t-item history-item" onclick="showTimelineInfo(this, '1961: Полёт Гагарина и ядерная угроза', '<strong>Почему это фон для «9 дней одного года» (1961/62)?</strong> Эпоха «физиков и лириков». Полёт Гагарина сделал науку главным культом, но Карибский кризис 1962 года показал обратную сторону прогресса — угрозу ядерной войны. Фильм Ромма — это прямой ответ на эти события: он впервые поднял тему моральной цены научного открытия и радиационной опасности, показав, что за прогресс ученые платят своим здоровьем.')">
+                    <div class="t-dot history"></div>
+                    <div>
+                        <div class="t-date">1961</div>
+                        <div class="t-label">Полёт Гагарина</div>
+                    </div>
+                </div>
+                <!-- 1961/62 -->
+                <a href="#9days" class="t-item movie-item">
+                    <div class="t-dot movie"></div>
+                    <div>
+                        <div class="t-date">1961/62</div>
+                        <div class="t-label">«9 дней»</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Блок для вывода текста -->
+        <div id="timeline-info-box" class="timeline-info-box"></div>
+    </section>
+
+    <!-- ФИЛЬМ 1 -->
+    <section id="friends">
+        <div class="film-card">
+            <div class="film-header">
+                <h3>«Верные друзья»</h3>
+                <div class="film-meta">1954 // Реж. Михаил Калатозов</div>
+                
+                <div class="film-stats-row">
+                    <a href="https://www.kinopoisk.ru/film/45728/" target="_blank" class="kp-link">Смотреть на Кинопоиске</a>
+                    <span class="rating-badge">Кинопоиск: 8.5</span>
+                    <span class="rating-badge">IMDb: 8.3</span>
+                </div>
+                
+                <p class="film-desc-text"><strong>Описание:</strong> Трое закадычных друзей детства, встретившись спустя много лет, решают вспомнить юность и отправиться в путешествие по реке на плоту, несмотря на свои высокие должности и статус.</p>
+                <div class="critics-box"><strong>Мнение критиков:</strong> Подкупает ненавязчивой идеологией и живыми человеческими характерами. Добрая и светлая комедия о настоящей дружбе.</div>
+
+                <div class="film-quote">«Шёл ли дальней стороною, плыл ли морем я, всюду были вы со мною, <strong>верные друзья</strong>».</div>
+            </div>
+            <div class="film-content">
+                
+                <div class="gallery-title">// Кадры из фильма</div>
+                <div class="gallery">
+                    <!-- Замени на свои картинки в папке images -->
+                    <img src="images/friends_1.jpg" onclick="openLightbox(this.src)" alt="Кадр 1">
+                    <img src="images/friends_2.jpg" onclick="openLightbox(this.src)" alt="Кадр 2">
+                    <img src="images/friends_3.jpg" onclick="openLightbox(this.src)" alt="Кадр 3">
+                </div>
+
+                <div class="section-title">Историческое досье</div>
+                <div class="director-box">
+                    <strong>Режиссер и время:</strong> Михаил Калатозов снимал этот фильм летом 1953 года. Картина стала <strong>предвестником «оттепели»</strong>: отказ от тяжелых тем войны в пользу светлой комедии о дружбе, где ценность человеческой жизни важнее чинов.
+                </div>
+
+                <div class="section-title">Стена героев</div>
+                <div class="hero-wall">
+                    <div class="hero-card" onclick="toggleHero(this)">
+                        <img src="images/nestratov.jpg" class="hero-img" alt="Нестратов">
+                        <div class="hero-info">
+                            <div class="hero-name">Василий Нестратов</div>
+                            <div class="hero-role">Академик архитектуры</div>
+                            <div class="hero-desc">Чопорный академик. В юности носил прозвище «Индюк». Путешествие на плоту заставляет его вспомнить, каково это — быть простым парнем.</div>
+                        </div>
+                    </div>
+                    <div class="hero-card" onclick="toggleHero(this)">
+                        <img src="images/chizhov.jpg" class="hero-img" alt="Чижов">
+                        <div class="hero-info">
+                            <div class="hero-name">Борис Чижов</div>
+                            <div class="hero-role">Хирург</div>
+                            <div class="hero-desc">Душа компании. В юности — «Чижик». Инициирует путешествие и показывает, что настоящая дружба не признает социальных статусов.</div>
+                        </div>
+                    </div>
+                    <div class="hero-card" onclick="toggleHero(this)">
+                        <img src="images/lapin.jpg" class="hero-img" alt="Лапин">
+                        <div class="hero-info">
+                            <div class="hero-name">Александр Лапин</div>
+                            <div class="hero-role">Животновод</div>
+                            <div class="hero-desc">Хозяйственный и приземленный. В юности — «Кошачий барин». Символизирует опору на землю и простой человеческий труд.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">Ценности</div>
+                <div class="values-tags">
+                    <div class="value-tag">Дружба</div>
+                    <div class="value-tag">Равенство</div>
+                </div>
+                <div class="summary-box">
+                    На плоту академические звания не решают бытовые проблемы, и героям приходится договариваться на равных. <strong>Личные связи важнее формального статуса.</strong>
+                </div>
+
+                <div class="quiz-block">
+                    <div class="quiz-question">Какая ценность проявляется в готовности друзей «макнуть академика»?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" onclick="checkQuiz(this, 'wrong')">Борьба с интеллигенцией</button>
+                        <button class="quiz-btn" onclick="checkQuiz(this, 'correct')">Равенство и ценность личных связей над статусом</button>
+                        <button class="quiz-btn" onclick="checkQuiz(this, 'wrong')">Доказать физическое превосходство</button>
+                    </div>
+                    <div class="quiz-result"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ФИЛЬМ 2 -->
+    <section id="communist">
+        <div class="film-card">
+            <div class="film-header">
+                <h3>«Коммунист»</h3>
+                <div class="film-meta">1957 // Реж. Юлий Райзман</div>
+                
+                <div class="film-stats-row">
+                    <a href="https://www.kinopoisk.ru/film/44882/" target="_blank" class="kp-link">Смотреть на Кинопоиске</a>
+                    <span class="rating-badge">Кинопоиск: 7.9</span>
+                    <span class="rating-badge">IMDb: 7.2</span>
+                </div>
+                
+                <p class="film-desc-text"><strong>Описание:</strong> О рядовом коммунисте Василии Губанове, одном из участников первых советских строек, который сталкивается с бюрократией и саботажем, защищая дело революции.</p>
+                <div class="critics-box"><strong>Мнение критиков:</strong> Колоссальная энергетика Евгения Урбанского. При этом сцена встречи с Лениным выглядит самой слабой и неестественной во всём фильме.</div>
+
+                <div class="film-quote">«Загоре хлеб нужен! Понимаешь, <strong>хлеб</strong>! Там люди голодают!»</div>
+            </div>
+            <div class="film-content">
+                
+                <div class="gallery-title">// Кадры из фильма</div>
+                <div class="gallery">
+                    <img src="images/communist_1.jpg" onclick="openLightbox(this.src)" alt="Кадр 1">
+                    <img src="images/communist_2.jpg" onclick="openLightbox(this.src)" alt="Кадр 2">
+                    <img src="images/communist_3.jpg" onclick="openLightbox(this.src)" alt="Кадр 3">
+                </div>
+
+                <div class="section-title">Историческое досье</div>
+                <div class="director-box">
+                    <strong>Режиссер и время:</strong> Юлий Райзман снял фильм к 40-летию Октябрьской революции. В разгар «оттепели» он показал, что <strong>революционер — тоже живой человек</strong> с чувствами и правом на личное счастье.
+                </div>
+
+                <div class="section-title">Стена героев</div>
+                <div class="hero-wall">
+                    <div class="hero-card" onclick="toggleHero(this)">
+                        <img src="images/gubanov.jpg" class="hero-img" alt="Губанов">
+                        <div class="hero-info">
+                            <div class="hero-name">Василий Губанов</div>
+                            <div class="hero-role">Главный герой</div>
+                            <div class="hero-desc">Фанатично предан делу. Не боится идти против системы ради правды. Вынужден выбирать между любовью к жене и партийным долгом.</div>
+                        </div>
+                    </div>
+                    <div class="hero-card" onclick="toggleHero(this)">
+                        <img src="images/anyuta.jpg" class="hero-img" alt="Анюта">
+                        <div class="hero-info">
+                            <div class="hero-name">Анюта Фокина</div>
+                            <div class="hero-role">Жена Губанова</div>
+                            <div class="hero-desc">Символ человеческого начала, которое противостоит бездушной машине революции и жертвенности ради идеи.</div>
+                        </div>
+                    </div>
+                    <div class="hero-card" onclick="toggleHero(this)">
+                        <img src="images/hromchenko.jpg" class="hero-img" alt="Храмченко">
+                        <div class="hero-info">
+                            <div class="hero-name">Храмченко</div>
+                            <div class="hero-role">Антагонист</div>
+                            <div class="hero-desc">Представитель «старого мира». Бюрократ, который пытается нажиться на стройке и саботирует работу.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">Ценности</div>
+                <div class="values-tags">
+                    <div class="value-tag">Служение</div>
+                    <div class="value-tag">Честность</div>
+                </div>
+                <div class="summary-box">
+                    Губанов включается в <strong>решение практических задач</strong> (достать гвозди, валить лес), а не ограничивается лозунгами. Общественный идеал проверяется трудом.
+                </div>
+
+                <div class="quiz-block">
+                    <div class="quiz-question">Как поступок Губанова (рубка леса ради хлеба) раскрывает ценность?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" onclick="checkQuiz(this, 'wrong')">Желание получить должность</button>
+                        <button class="quiz-btn" onclick="checkQuiz(this, 'correct')">Самопожертвование ради спасения людей</button>
+                        <button class="quiz-btn" onclick="checkQuiz(this, 'wrong')">Доказать свою силу</button>
+                    </div>
+                    <div class="quiz-result"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ФИЛЬМ 3 -->
+    <section id="9days">
+        <div class="film-card">
+            <div class="film-header">
+                <h3>«9 дней одного года»</h3>
+                <div class="film-meta">1961/1962 // Реж. Михаил Ромм</div>
+                
+                <div class="film-stats-row">
+                    <a href="https://www.kinopoisk.ru/film/46802/" target="_blank" class="kp-link">Смотреть на Кинопоиске</a>
+                    <span class="rating-badge">Кинопоиск: 8.1</span>
+                    <span class="rating-badge">IMDb: 7.8</span>
+                </div>
+                
+                <p class="film-desc-text"><strong>Описание:</strong> История о молодых учёных-ядерщиках, которые, рискуя здоровьем и жизнью, проводят опасные эксперименты. В центре сюжета — не только наука, но и любовь, дружба и нравственный выбор.</p>
+                <div class="critics-box"><strong>Мнение критиков:</strong> Один из ярчайших представителей советского «оттепельного» кино. Интеллектуальная драма, поднимающая тему эгоизма и цены прогресса.</div>
+
+                <div class="film-quote">«Я иду в <strong>неизвестность</strong>».</div>
+            </div>
+            <div class="film-content">
+                
+                <div class="gallery-title">// Кадры из фильма</div>
+                <div class="gallery">
+                    <img src="images/9days_1.jpg" onclick="openLightbox(this.src)" alt="Кадр 1">
+                    <img src="images/9days_2.jpg" onclick="openLightbox(this.src)" alt="Кадр 2">
+                    <img src="images/9days_3.jpg" onclick="openLightbox(this.src)" alt="Кадр 3">
+                </div>
+
+                <div class="section-title">Историческое досье</div>
+                <div class="director-box">
+                    <strong>Режиссер и время:</strong> Михаил Ромм создал картину на пике эпохи «физиков и лириков». Он впервые поднял тему <strong>радиационной опасности</strong> и моральной цены научного прогресса.
+                </div>
+
+                <div class="section-title">Стена героев</div>
+                <div class="hero-wall">
+                    <div class="hero-card" onclick="toggleHero(this)">
+                        <img src="images/gusev.jpg" class="hero-img" alt="Гусев">
+                        <div class="hero-info">
+                            <div class="hero-name">Дмитрий Гусев</div>
+                            <div class="hero-role">Физик-экспериментатор</div>
+                            <div class="hero-desc">Одержим наукой. Готов рисковать здоровьем ради открытия. Но он любит жизнь и мучается от того, что прогресс требует жертв.</div>
+                        </div>
+                    </div>
+                    <div class="hero-card" onclick="toggleHero(this)">
+                        <img src="images/kulikov.jpg" class="hero-img" alt="Куликов">
+                        <div class="hero-info">
+                            <div class="hero-name">Илья Куликов</div>
+                            <div class="hero-role">Физик-теоретик</div>
+                            <div class="hero-desc">Осторожный и рассудительный. Считает, что ученый должен думать о последствиях. Его позиция — это не трусость, а ответственность.</div>
+                        </div>
+                    </div>
+                    <div class="hero-card" onclick="toggleHero(this)">
+                        <img src="images/lyolya.jpg" class="hero-img" alt="Лёля">
+                        <div class="hero-info">
+                            <div class="hero-name">Лёля (Елена)</div>
+                            <div class="hero-role">Возлюбленная Гусева</div>
+                            <div class="hero-desc">Живой человек. Видит в Гусеве не только ученого-подвижника, но и мужчину. Напоминает о ценности простых человеческих чувств.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">Ценности</div>
+                <div class="values-tags">
+                    <div class="value-tag">Прогресс</div>
+                    <div class="value-tag">Ответственность</div>
+                </div>
+                <div class="summary-box">
+                    Риск облучения превращает работу в <strong>нравственную проблему</strong>. Фильм показывает ученого с его чувствами и сомнениями, а не просто «винтика» системы.
+                </div>
+
+                <div class="quiz-block">
+                    <div class="quiz-question">В чём главный нравственный конфликт фильма?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" onclick="checkQuiz(this, 'correct')">Между научным прогрессом и ценой жизни (риском)</button>
+                        <button class="quiz-btn" onclick="checkQuiz(this, 'wrong')">Борьба с бюрократической системой</button>
+                        <button class="quiz-btn" onclick="checkQuiz(this, 'wrong')">Выбор между любовью и карьерой</button>
+                    </div>
+                    <div class="quiz-result"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ОБЩИЙ ВЫВОД -->
+    <section id="conclusion">
+        <h2>// Общий вывод</h2>
+        <div class="conclusion">
+            <div class="conclusion-text">
+                <p>Проведя анализ трёх ключевых фильмов эпохи оттепели, мы видим, как <strong>исторический контекст напрямую менял моральные ориентиры</strong> общества, транслируемые с экрана:</p>
+                <p>1. В 1954 году (<strong>«Верные друзья»</strong>) на фоне окончания сталинской эпохи главной ценностью становится искренняя <strong>дружба и равенство</strong> людей.</p>
+                <p>2. В 1957 году (<strong>«Коммунист»</strong>) после XX съезда акцент смещается на самоотверженное <strong>служение общему делу и личную честность</strong>.</p>
+                <p>3. К 1961–62 годам (<strong>«9 дней одного года»</strong>) в эпоху космоса и ядерной угрозы на первый план выходит <strong>ответственность ученого за цену прогресса</strong> и человеческую жизнь.</p>
+                <p style="margin-top: 20px;">Советское кино прошло путь <strong>от простых человеческих чувств к осознанию сложной моральной ответственности</strong> личности перед будущим. Каждый из этих фильмов — не просто памятник эпохи, а важный документ, зафиксировавший слом старой системы ценностей.</p>
+            </div>
+            <p style="color: var(--red); font-size: 1.6rem; margin-top: 30px; font-weight: 900;">Это не единая формула, а три разных ответа на вопрос о личном и общем.</p>
+        </div>
+    </section>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <img src="" id="lightbox-img" alt="Увеличенное изображение">
+    </div>
+
+    <script>
+        function checkQuiz(btn, status) {
+            const quizBlock = btn.closest('.quiz-block');
+            const resultDiv = quizBlock.querySelector('.quiz-result');
+            const allBtns = quizBlock.querySelectorAll('.quiz-btn');
+            
+            allBtns.forEach(b => { b.classList.remove('correct', 'wrong'); b.disabled = false; });
+            resultDiv.textContent = '';
+            
+            if (status === 'correct') {
+                btn.classList.add('correct');
+                resultDiv.textContent = 'Верно!';
+                resultDiv.style.color = 'var(--green)';
+                allBtns.forEach(b => b.disabled = true);
+            } else {
+                btn.classList.add('wrong');
+                resultDiv.textContent = 'Неверно. Попробуйте еще раз.';
+                resultDiv.style.color = 'var(--red)';
+            }
+        }
+
+        function showTimelineInfo(element, title, text) {
+            const infoBox = document.getElementById('timeline-info-box');
+            document.querySelectorAll('.t-item').forEach(i => i.style.opacity = '0.5');
+            element.style.opacity = '1';
+            infoBox.innerHTML = `<h4>${title}</h4><p>${text}</p>`;
+            infoBox.style.display = 'block';
+        }
+
+        document.querySelectorAll('.movie-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.t-item').forEach(i => i.style.opacity = '1');
+                document.getElementById('timeline-info-box').style.display = 'none';
+            });
+        });
+
+        function toggleHero(element) {
+            const parentWall = element.closest('.hero-wall');
+            const allHeroes = parentWall.querySelectorAll('.hero-card');
+            allHeroes.forEach(hero => { if (hero !== element) hero.classList.remove('active'); });
+            element.classList.toggle('active');
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
